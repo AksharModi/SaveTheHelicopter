@@ -1,11 +1,14 @@
 var obj;
+var name = "Player's";
+var i=0;
 var bar;
+var header;
+var footer;
+var score=0;
 var flagPressed=false;
 var helicopter;
-var v1 =0;
-var v2 =0;
+var scoreLabel;
 var gameLayer = cc.Layer.extend({
-
 
     sprite:null,
     ctor:function () {
@@ -16,17 +19,36 @@ var gameLayer = cc.Layer.extend({
         var gameStartLabel = new cc.LabelTTF("Click to Start", "Comic Sans MS", 25);
         gameStartLabel.x = size.width / 2;
         gameStartLabel.y = size.height / 2 + 100;
+
         this.addChild(gameStartLabel, 0);
         obj=this;
+        
         helicopter = new cc.Sprite.create(res.Helicopter_png);
         helicopter.setAnchorPoint(cc.p(0.5,0.5));
         helicopter.setPosition(cc.p(120,size.height/2));
-        helicopter.runAction(cc.ScaleTo.create(0,0.13,0.13));
+        helicopter.runAction(cc.ScaleTo.create(0,0.12,0.12));
         this.addChild(helicopter, 0);
-        this.schedule(CreateBarriers,2);
+        this.schedule(CreateBarriers,1.5);
         this.schedule(movePressed,0);
         this.schedule(collisionDetect,0);
-        cc.log("w:"+helicopter.width);
+
+        scoreLabel = new cc.LabelTTF(score, "Comic Sans MS", 30);
+        scoreLabel.setColor(cc.color(255,255,255,255));
+    	scoreLabel.x = size.width/2 -200;
+    	scoreLabel.y = 570;
+    	if(nameField.string!="") 
+			name = nameField.string + "'s";
+    	this.addChild(scoreLabel,5);
+        this.schedule(scoreCalc,0);
+
+        header = new cc.Sprite.create(res.Border_png);
+        header.setPosition(cc.p(480,600));
+        this.addChild(header, 0);
+         
+        footer = new cc.Sprite.create(res.Border_png);
+        footer.setPosition(cc.p(480,30));
+        this.addChild(footer, 0);
+
         if(cc.sys.capabilities.hasOwnProperty('keyboard'))
         {
             cc.eventManager.addListener(
@@ -46,6 +68,13 @@ var gameLayer = cc.Layer.extend({
         return true;        
     }    
 });
+var scoreCalc=function()
+{
+	i++;
+	if(i%4 == 0)
+		score++;
+	scoreLabel.setString(name+" Score: "+ score.toString());
+}
 var collisionDetect=function()
 {
     if(helicopter==null || bar == null)
@@ -57,17 +86,19 @@ var collisionDetect=function()
         cc.director.pause();
         cc.log(y);
     }*/
-    var rect1 = helicopter.getBoundingBox( );
-    var rect2 = bar.getBoundingBox( );
+    var heli = helicopter.getBoundingBox( );
+    var b = bar.getBoundingBox( );
+    var hd = header.getBoundingBox(); 
+    var ft = footer.getBoundingBox(); 
 
-    if (helicopter.getPositionY()<12 || cc.rectIntersectsRect(rect1,rect2))
+    if (helicopter.getPositionY()<15 || cc.rectIntersectsRect(heli,b) || cc.rectIntersectsRect(heli,hd) || cc.rectIntersectsRect(heli,ft))
     {
         cc.director.pause();
-        cc.log( "Collided");
+        cc.log("Collided");
     }
     else
     {
-        cc.log( "Not collided" );
+        cc.log("Not collided" );
     }
 }
 
@@ -84,14 +115,14 @@ var CreateBarriers=function()
     bar = new cc.Sprite.create(res.Bar_png);
     bar.setAnchorPoint(0,0);
     var rndValY = 0;
-    var min = 0; 
+    var min = 50; 
     var maxWidth = size.width;
-    var maxHeight = size.height;
+    var maxHeight = size.height-50;
     var multiple = 50;
     rndValY = Math.floor(Math.random() * ((maxHeight - min) / multiple)) * multiple + min;
     bar.setPosition(cc.p(size.width,rndValY));
     obj.addChild(bar,0); 
-    bar.runAction(cc.MoveTo.create(1.8,cc.p(-60,rndValY)));     
+    bar.runAction(cc.MoveTo.create(1.5,cc.p(-60,rndValY)));     
 }
 
 var gameScene = cc.Scene.extend({
