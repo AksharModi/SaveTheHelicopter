@@ -21,7 +21,7 @@ var gameLayer = cc.Layer.extend({
         helicopter = new cc.Sprite.create(res.Helicopter_png);
         helicopter.setAnchorPoint(cc.p(0.5,0.5));
         helicopter.setPosition(cc.p(120,size.height/2));
-        helicopter.runAction(cc.ScaleTo.create(0,0.1,0.1));
+        helicopter.runAction(cc.ScaleTo.create(0,0.13,0.13));
         this.addChild(helicopter, 0);
         this.schedule(CreateBarriers,2);
         this.schedule(movePressed,0);
@@ -50,12 +50,24 @@ var collisionDetect=function()
 {
     if(helicopter==null || bar == null)
         return;
-    var x=(helicopter.getPositionX()+30) - bar.getPositionX() ;
+    /*var x=(helicopter.getPositionX()+30) - bar.getPositionX() ;
     var y=(helicopter.getPositionY()) - bar.getPositionY();
     if( (x<=10 && x>=-10) && (y >= -8 && y<=170))
     {
         cc.director.pause();
         cc.log(y);
+    }*/
+    var rect1 = helicopter.getBoundingBox( );
+    var rect2 = bar.getBoundingBox( );
+
+    if (helicopter.getPositionY()<12 || cc.rectIntersectsRect(rect1,rect2))
+    {
+        cc.director.pause();
+        cc.log( "Collided");
+    }
+    else
+    {
+        cc.log( "Not collided" );
     }
 }
 
@@ -79,7 +91,7 @@ var CreateBarriers=function()
     rndValY = Math.floor(Math.random() * ((maxHeight - min) / multiple)) * multiple + min;
     bar.setPosition(cc.p(size.width,rndValY));
     obj.addChild(bar,0); 
-    bar.runAction(cc.MoveTo.create(2,cc.p(-35,rndValY)));     
+    bar.runAction(cc.MoveTo.create(1.8,cc.p(-60,rndValY)));     
 }
 
 var gameScene = cc.Scene.extend({
