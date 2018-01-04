@@ -68,7 +68,9 @@ var gameLayer = cc.Layer.extend({
                 onKeyPressed: function(key,event)
                 {
                     if(key.toString()==32)
-                        flagPressed=true;
+					{
+						flagPressed=true;
+					}                        
                 },
                 onKeyReleased: function(key,event)
                 {
@@ -84,6 +86,7 @@ var gameLayer = cc.Layer.extend({
                 onMouseDown: function(event)
                 {
                     flagPressed=true;
+                    
                 },
                 onMouseUp: function(event)
                 {
@@ -125,20 +128,27 @@ var collisionDetect=function()
 
     if (helicopter.getPositionY()<15 || cc.rectIntersectsRect(heli,b) || cc.rectIntersectsRect(heli,hd) || cc.rectIntersectsRect(heli,ft))
     {
+    	flagPressed=null;
+    	//helicopter.runAction((cc.MoveTo.create(3,cc.p(helicopter.getPositionX()-5,150))));
+    	cc.audioEngine.stopMusic(null);
+    	cc.audioEngine.setMusicVolume(0.2);
+    	cc.audioEngine.playMusic(res.Crash_mp3);
         highScore = cc.sys.localStorage.getItem("s");
-        cc.log(highScore);
-        
-        highScoreLabel.setString("High Score: "+ highScore);	
-        cc.director.pause();
-        cc.log(highScore);
-            	
+        highScoreLabel.setString("High Score: "+ highScore);	            	
+        obj.scheduleOnce(pauseGame,0);
     }
 }
-
+var pauseGame=function()
+{
+	cc.director.pause();
+}
 /*
 Mouse control-Done
-Reward Screen -- Highest Score, Score,Replay button -- using state file
-Add Sounds
+Reward Screen -- 
+	Highest Score-Done
+	Score-Done
+	Replay button- 	
+Add Sounds-Done
 Add Animation
 */
 
@@ -146,9 +156,17 @@ Add Animation
 var movePressed=function()
 {
     if(flagPressed==true)
-        helicopter.runAction(cc.MoveBy.create(0.3,cc.p(0.5,4)));
+   	{
+   	    helicopter.runAction(cc.MoveBy.create(0.3,cc.p(0.5,4)));
+   	    if(!cc.audioEngine.isMusicPlaying())
+    		cc.audioEngine.playMusic(res.Hover_mp3);
+    	cc.audioEngine.setMusicVolume(1);	
+    }
     else
+    {
+    	cc.audioEngine.setMusicVolume(0.3);
         helicopter.runAction(cc.MoveBy.create(0,cc.p(-0.4,-4)));
+    }
 }
 var CreateBarriers=function() 
 {   
