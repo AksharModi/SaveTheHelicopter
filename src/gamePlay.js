@@ -1,4 +1,5 @@
 var obj;
+var save;
 var name = "Player's";
 var i=0;
 var bar;
@@ -8,6 +9,7 @@ var score=0;
 var flagPressed=false;
 var helicopter;
 var scoreLabel;
+var highScore;
 var gameLayer = cc.Layer.extend({
 
     sprite:null,
@@ -34,12 +36,21 @@ var gameLayer = cc.Layer.extend({
 
         scoreLabel = new cc.LabelTTF(score, "Comic Sans MS", 30);
         scoreLabel.setColor(cc.color(255,255,255,255));
-    	scoreLabel.x = size.width/2 -200;
+    	scoreLabel.x = size.width/2 -220;
     	scoreLabel.y = 570;
     	if(nameField.string!="") 
 			name = nameField.string + "'s";
-    	this.addChild(scoreLabel,5);
+    	this.addChild(scoreLabel,1);
         this.schedule(scoreCalc,0);
+
+        highScore = cc.sys.localStorage.getItem("s");
+    	if(highScore==null)
+    		highScore=0;
+    	highScoreLabel = new cc.LabelTTF("High Score: "+highScore, "Comic Sans MS", 30);
+        highScoreLabel.setColor(cc.color(255,255,255,255));
+    	highScoreLabel.x = size.width/2 +220;
+    	highScoreLabel.y = 570;
+    	this.addChild(highScoreLabel,2);
 
         header = new cc.Sprite.create(res.Border_png);
         header.setPosition(cc.p(480,600));
@@ -57,12 +68,27 @@ var gameLayer = cc.Layer.extend({
                 onKeyPressed: function(key,event)
                 {
                     if(key.toString()==32)
-                        flagPressed=true;                                            
+                        flagPressed=true;
                 },
                 onKeyReleased: function(key,event)
                 {
                     flagPressed=false;
                 }    
+            },this);
+        }
+        if(cc.sys.capabilities.hasOwnProperty('mouse'))
+        {
+            cc.eventManager.addListener(
+            {
+                event: cc.EventListener.MOUSE,
+                onMouseDown: function(event)
+                {
+                    flagPressed=true;
+                },
+                onMouseUp: function(event)
+                {
+					flagPressed=false;
+                }   
             },this);
         }
         return true;        
@@ -74,6 +100,12 @@ var scoreCalc=function()
 	if(i%4 == 0)
 		score++;
 	scoreLabel.setString(name+" Score: "+ score.toString());
+	save=score;
+	if(highScore<save || highScore==null)
+        {	
+        	cc.sys.localStorage.setItem("s",save);
+        	highScore = save;
+        }
 }
 var collisionDetect=function()
 {
@@ -93,14 +125,23 @@ var collisionDetect=function()
 
     if (helicopter.getPositionY()<15 || cc.rectIntersectsRect(heli,b) || cc.rectIntersectsRect(heli,hd) || cc.rectIntersectsRect(heli,ft))
     {
+        highScore = cc.sys.localStorage.getItem("s");
+        cc.log(highScore);
+        
+        highScoreLabel.setString("High Score: "+ highScore);	
         cc.director.pause();
-        cc.log("Collided");
-    }
-    else
-    {
-        cc.log("Not collided" );
+        cc.log(highScore);
+            	
     }
 }
+
+/*
+Mouse control-Done
+Reward Screen -- Highest Score, Score,Replay button -- using state file
+Add Sounds
+Add Animation
+*/
+
 
 var movePressed=function()
 {
