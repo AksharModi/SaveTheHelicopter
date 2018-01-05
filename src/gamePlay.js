@@ -34,7 +34,7 @@ var gameLayer = cc.Layer.extend({
         helicopter.setPosition(cc.p(120,size.height/2));
         helicopter.runAction(cc.ScaleTo.create(0,0.12,0.12));
         this.addChild(helicopter, 0);
-        this.schedule(CreateBarriers,1.5);
+        this.schedule(CreateBarriers,1.2);
         this.schedule(movePressed,0);
         this.schedule(collisionDetect,0);
 
@@ -211,7 +211,7 @@ var CreateBarriers=function()
     rndValY = Math.floor(Math.random() * ((maxHeight - min) / multiple)) * multiple + min;
     bar.setPosition(cc.p(size.width,rndValY));
     obj.addChild(bar,0); 
-    bar.runAction(cc.MoveTo.create(1.5,cc.p(-60,rndValY)));     
+    bar.runAction(cc.MoveTo.create(1.2,cc.p(-60,rndValY)));     
 }
 
 var gameScene = cc.Scene.extend({
