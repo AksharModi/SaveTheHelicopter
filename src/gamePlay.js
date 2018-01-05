@@ -22,11 +22,6 @@ var gameLayer = cc.Layer.extend({
         
         this._super();
         cc.director.setClearColor(cc.color(255,255,255,255));
-        var gameStartLabel = new cc.LabelTTF("Click to Start", "Comic Sans MS", 25);
-        gameStartLabel.x = size.width / 2;
-        gameStartLabel.y = size.height / 2 + 100;
-
-        this.addChild(gameStartLabel, 0);
         obj=this;
         flagPressed=false;
         helicopter = new cc.Sprite.create(res.Helicopter_png);
@@ -58,11 +53,13 @@ var gameLayer = cc.Layer.extend({
 
         header = new cc.Sprite.create(res.Border_png);
         header.setPosition(cc.p(480,600));
-        this.addChild(header, 0);
+ 	    header.setScale(0.5,0.25)
+        this.addChild(header, 5);
          
-        footer = new cc.Sprite.create(res.Border_png);
-        footer.setPosition(cc.p(480,30));
-        this.addChild(footer, 0);
+        footer = new cc.Sprite.create(res.Border2_png);
+        footer.setPosition(cc.p(480,40));
+        footer.setScale(0.3,0.3)
+        this.addChild(footer, 5);
 
         if(cc.sys.capabilities.hasOwnProperty('keyboard'))
         {
@@ -153,11 +150,11 @@ var rewardScreen=function()
         backScreen.runAction(cc.FadeIn.create(1));
         this.addChild(backScreen, 1);
 		var replay = new cc.MenuItemImage.create(res.Replay_png,null,replayGame,this);
-        replay.setPosition(cc.p(-55,0));
+        replay.setPosition(cc.p(-70,-50));
         this.addChild(new cc.Menu(replay),2);
         replay.runAction(cc.FadeIn.create(1));
         var exitGame = new cc.MenuItemImage.create(res.ExitGame_png,null,exitGameFunc,this);
-        exitGame.setPosition(cc.p(55,0));
+        exitGame.setPosition(cc.p(70,-50));
         exitGame.runAction(cc.FadeIn.create(1));
         this.addChild(new cc.Menu(exitGame),2);	
 }

@@ -4,13 +4,17 @@ var homeLayer = cc.Layer.extend({
     nameField:null,
     ctor:function () {
         this._super();
-        cc.director.setClearColor(cc.color(0,0,0,0));
+        cc.director.setClearColor(cc.color(39,40,34,0));
         
         var size = cc.winSize;
-        var gameLabel = new cc.LabelTTF("Save the Helicopter", "Arial", 45);
+        /*var gameLabel = new cc.LabelTTF("Save the Helicopter", "Arial", 45);
         gameLabel.x = size.width / 2;
         gameLabel.y = size.height / 2 + 100;
-        this.addChild(gameLabel, 0);
+        this.addChild(gameLabel, 0);*/
+
+        var gameImage = new cc.Sprite.create(res.GameImage_png);
+        gameImage.setPosition(size.width / 2, size.height/2+180);
+        this.addChild(gameImage,0);
 
 		var playGame = new cc.MenuItemImage.create(res.PlayGame_png,null,gamePlayScreen,this);
         playGame.runAction(cc.ScaleTo.create(0,0.5,0.5));
