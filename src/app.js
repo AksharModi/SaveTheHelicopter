@@ -4,10 +4,10 @@ var homeLayer = cc.Layer.extend({
     nameField:null,
     ctor:function () {
         this._super();
-        cc.director.setClearColor(cc.color(155,155,155,155));
+        cc.director.setClearColor(cc.color(0,0,0,0));
         
         var size = cc.winSize;
-        var gameLabel = new cc.LabelTTF("Save the Helicopter", "Comic Sans MS", 45);
+        var gameLabel = new cc.LabelTTF("Save the Helicopter", "Arial", 45);
         gameLabel.x = size.width / 2;
         gameLabel.y = size.height / 2 + 100;
         this.addChild(gameLabel, 0);
@@ -33,19 +33,14 @@ var homeLayer = cc.Layer.extend({
         switch (type)
         {
             case ccui.TextField.EVENT_ATTACH_WITH_IME:
-                cc.log("Activate");
-
-                break;
-
-            case ccui.TextField.EVENT_DETACH_WITH_IME:
-                cc.log("Deactivate");
+                 nameField.placeHolder = "|";
+                 break;
         }
     }
 });
 
 var gamePlayScreen = function()
 {
-	cc.log(nameField.string);
 	cc.director.pushScene(new gameScene);
 }
 var homeScene = cc.Scene.extend({

@@ -6,10 +6,15 @@ var bar;
 var header;
 var footer;
 var score=0;
+var size = cc.winSize;
 var flagPressed=false;
 var helicopter;
 var scoreLabel;
 var highScore;
+var heli;
+var b;
+var hd;
+var ft;
 var gameLayer = cc.Layer.extend({
 
     sprite:null,
@@ -17,14 +22,13 @@ var gameLayer = cc.Layer.extend({
         
         this._super();
         cc.director.setClearColor(cc.color(255,255,255,255));
-        var size = cc.winSize;
         var gameStartLabel = new cc.LabelTTF("Click to Start", "Comic Sans MS", 25);
         gameStartLabel.x = size.width / 2;
         gameStartLabel.y = size.height / 2 + 100;
 
         this.addChild(gameStartLabel, 0);
         obj=this;
-        
+        flagPressed=false;
         helicopter = new cc.Sprite.create(res.Helicopter_png);
         helicopter.setAnchorPoint(cc.p(0.5,0.5));
         helicopter.setPosition(cc.p(120,size.height/2));
@@ -67,30 +71,32 @@ var gameLayer = cc.Layer.extend({
                 event: cc.EventListener.KEYBOARD,
                 onKeyPressed: function(key,event)
                 {
-                    if(key.toString()==32)
+                    if(key.toString()==32  && flagPressed!=null)
 					{
 						flagPressed=true;
 					}                        
                 },
                 onKeyReleased: function(key,event)
                 {
-                    flagPressed=false;
+                	if (flagPressed!=null)
+	                    flagPressed=false;
                 }    
             },this);
         }
-        if(cc.sys.capabilities.hasOwnProperty('mouse'))
+        if(cc.sys.capabilities.hasOwnProperty('mouse') && flagPressed!=null)
         {
             cc.eventManager.addListener(
             {
                 event: cc.EventListener.MOUSE,
                 onMouseDown: function(event)
                 {
-                    flagPressed=true;
+                	if (flagPressed!=null)
+ 	                   flagPressed=true;
                     
                 },
                 onMouseUp: function(event)
-                {
-					flagPressed=false;
+                {	
+						flagPressed=false;
                 }   
             },this);
         }
@@ -100,61 +106,80 @@ var gameLayer = cc.Layer.extend({
 var scoreCalc=function()
 {
 	i++;
-	if(i%4 == 0)
+	if(i%4 == 0 && flagPressed!=null)
 		score++;
 	scoreLabel.setString(name+" Score: "+ score.toString());
 	save=score;
 	if(highScore<save || highScore==null)
-        {	
-        	cc.sys.localStorage.setItem("s",save);
-        	highScore = save;
-        }
+    {	
+    	cc.sys.localStorage.setItem("s",save);
+        highScore = save;
+    }
 }
 var collisionDetect=function()
 {
-    if(helicopter==null || bar == null)
-        return;
-    /*var x=(helicopter.getPositionX()+30) - bar.getPositionX() ;
-    var y=(helicopter.getPositionY()) - bar.getPositionY();
-    if( (x<=10 && x>=-10) && (y >= -8 && y<=170))
-    {
-        cc.director.pause();
-        cc.log(y);
-    }*/
-    var heli = helicopter.getBoundingBox( );
-    var b = bar.getBoundingBox( );
-    var hd = header.getBoundingBox(); 
-    var ft = footer.getBoundingBox(); 
-
-    if (helicopter.getPositionY()<15 || cc.rectIntersectsRect(heli,b) || cc.rectIntersectsRect(heli,hd) || cc.rectIntersectsRect(heli,ft))
-    {
+    if(helicopter==null || bar == null || flagPressed==null)
+    	return;
+    heli = helicopter.getBoundingBox();
+    b = bar.getBoundingBox();
+    hy = helicopter.getPositionY();
+    if (hy<115|| hy>510 || cc.rectIntersectsRect(heli,b))
+    {	
+		helicopter.runAction(cc.FadeOut.create(0.5));
+    	bar.pause();
     	flagPressed=null;
-    	//helicopter.runAction((cc.MoveTo.create(3,cc.p(helicopter.getPositionX()-5,150))));
-    	cc.audioEngine.stopMusic(null);
-    	cc.audioEngine.setMusicVolume(0.2);
-    	cc.audioEngine.playMusic(res.Crash_mp3);
-        highScore = cc.sys.localStorage.getItem("s");
-        highScoreLabel.setString("High Score: "+ highScore);	            	
-        obj.scheduleOnce(pauseGame,0);
+    	afterCollision();
     }
+}
+var afterCollision=function()
+{
+	cc.audioEngine.stopMusic(null);
+    cc.audioEngine.setMusicVolume(0.2);
+    cc.audioEngine.playMusic(res.Crash_mp3);
+    highScore = cc.sys.localStorage.getItem("s");
+    highScoreLabel.setString("High Score: "+ highScore);	            	
+    obj.scheduleOnce(rewardScreen);
 }
 var pauseGame=function()
 {
 	cc.director.pause();
 }
-/*
-Mouse control-Done
-Reward Screen -- 
-	Highest Score-Done
-	Score-Done
-	Replay button- 	
-Add Sounds-Done
-Add Animation
-*/
+var rewardScreen=function()
+{
+		size=cc.winSize;
+		var backScreen = new cc.Sprite.create(res.BackScreen_png);
+        backScreen.setAnchorPoint(cc.p(0.5,0.5));
+        backScreen.setPosition(cc.p(size.width/2,size.height/2));
+        backScreen.runAction(cc.FadeIn.create(1));
+        this.addChild(backScreen, 1);
+		var replay = new cc.MenuItemImage.create(res.Replay_png,null,replayGame,this);
+        replay.setPosition(cc.p(-55,0));
+        this.addChild(new cc.Menu(replay),2);
+        replay.runAction(cc.FadeIn.create(1));
+        var exitGame = new cc.MenuItemImage.create(res.ExitGame_png,null,exitGameFunc,this);
+        exitGame.setPosition(cc.p(55,0));
+        exitGame.runAction(cc.FadeIn.create(1));
+        this.addChild(new cc.Menu(exitGame),2);	
+}
+var replayGame=function()
+{
+	score=0;
+	cc.director.popScene();
+	cc.director.pushScene(new gameScene);
+}
+var exitGameFunc=function()
+{
+	score=0;
+	cc.director.runScene(new homeScene);
+}
 
 
 var movePressed=function()
 {
+	if(flagPressed==null)
+	{
+		return;
+	}
     if(flagPressed==true)
    	{
    	    helicopter.runAction(cc.MoveBy.create(0.3,cc.p(0.5,4)));
@@ -170,6 +195,11 @@ var movePressed=function()
 }
 var CreateBarriers=function() 
 {   
+	if(flagPressed==null)
+	{
+		bar=null;
+		return;
+	}
     var size = cc.winSize;
     bar = new cc.Sprite.create(res.Bar_png);
     bar.setAnchorPoint(0,0);
