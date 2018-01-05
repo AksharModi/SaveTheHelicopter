@@ -34,22 +34,22 @@ var gameLayer = cc.Layer.extend({
         this.schedule(collisionDetect,0);
 
         scoreLabel = new cc.LabelTTF(score, "Comic Sans MS", 30);
-        scoreLabel.setColor(cc.color(255,255,255,255));
+        scoreLabel.setColor(cc.color(0,0,0,0));
     	scoreLabel.x = size.width/2 -220;
     	scoreLabel.y = 570;
     	if(nameField.string!="") 
 			name = nameField.string + "'s";
-    	this.addChild(scoreLabel,1);
+    	this.addChild(scoreLabel,30);
         this.schedule(scoreCalc,0);
 
         highScore = cc.sys.localStorage.getItem("s");
     	if(highScore==null)
     		highScore=0;
     	highScoreLabel = new cc.LabelTTF("High Score: "+highScore, "Comic Sans MS", 30);
-        highScoreLabel.setColor(cc.color(255,255,255,255));
+        highScoreLabel.setColor(cc.color(0,0,0,0));
     	highScoreLabel.x = size.width/2 +220;
     	highScoreLabel.y = 570;
-    	this.addChild(highScoreLabel,2);
+    	this.addChild(highScoreLabel,30);
 
         header = new cc.Sprite.create(res.Border_png);
         header.setPosition(cc.p(480,600));
